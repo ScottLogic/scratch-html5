@@ -316,6 +316,18 @@ var turnAwayFromEdge = function(s) {
 var ensureOnStageOnBounce = function(s) {
     var r = s.getRect();
 
+    var drawWidth = s.textures[s.currentCostumeIndex].width;
+    var drawHeight = s.textures[s.currentCostumeIndex].height;
+
+    var drawX = s.scratchX + (480 / 2);
+    var drawY = -s.scratchY + (360 / 2);
+
+    // Need to calculate for use later
+    var resolution = s.costumes[s.currentCostumeIndex].bitmapResolution || 1;
+
+    var rotationCenterX = s.costumes[s.currentCostumeIndex].rotationCenterX;
+    var rotationCenterY = s.costumes[s.currentCostumeIndex].rotationCenterY;
+
     if (r.left < 0) moveSpriteTo(s, s.scratchX - r.left, s.scratchY);
     if (r.top < 0) moveSpriteTo(s, s.scratchX, s.scratchY + r.top);
     if (r.right > 480) {
