@@ -65,7 +65,8 @@ Interpreter.prototype.fixArgs = function(b) {
     // Convert the arguments of the given block into blocks or substacks if necessary.
     // A block argument can be a constant (numbers, boolean strings, etc.), an expression (Blocks), or a substack (an array of blocks).
     var newArgs = [];
-    for (var i = 0; i < b.args.length; i++) {
+    var argLength = b.args.length;
+    for (var i = 0; i < argLength; i++) {
         var arg = b.args[i];
         if (arg && arg.constructor == Array) {
             if ((arg.length > 0) && (arg[0].constructor == Array)) {
@@ -88,7 +89,8 @@ Interpreter.prototype.fixArgs = function(b) {
 
 Interpreter.prototype.makeBlockList = function(blockList) {
     var firstBlock = null, lastBlock = null;
-    for (var i = 0; i < blockList.length; i++) {
+    var blockListLength = blockList.length;
+    for (var i = 0; i < blockListLength; i++) {
         var b = new Block(blockList[i]);
         if (firstBlock == null) firstBlock = b;
         if (lastBlock) lastBlock.nextBlock = b;
@@ -106,6 +108,7 @@ Interpreter.prototype.stepThreads = function() {
 
     while ((this.currentMSecs - startTime) < this.WorkTime && !this.doRedraw) {
         var threadStopped = false;
+
         for (var a = this.threads.length-1; a >= 0; --a) {
             this.activeThread = this.threads[a];
             this.stepActiveThread();
@@ -144,7 +147,8 @@ Interpreter.prototype.stepActiveThread = function() {
         this.activeThread.nextBlock = b.nextBlock;
         if (this.debugOps && this.debugFunc) {
             var finalArgs = [];
-            for (var i = 0; i < b.args.length; ++i) {
+            var argLength = b.args.length;
+            for (var i = 0; i < argLength; ++i) {
                 finalArgs.push(this.arg(b, i));
             }
 
@@ -177,7 +181,8 @@ Interpreter.prototype.stepActiveThread = function() {
 
 Interpreter.prototype.toggleThread = function(b, targetObj) {
     var newThreads = [], wasRunning = false;
-    for (var i = 0; i < this.threads.length; i++) {
+    var threadLength = this.threads.length;
+    for (var i = 0; i < threadLength; i++) {
         if (this.threads[i].stack[0] == b) {
             wasRunning = true;
         } else {
@@ -199,7 +204,8 @@ Interpreter.prototype.restartThread = function(b, targetObj) {
     // used by broadcast; stop any thread running on b, then start a new thread on b
     var newThread = new Thread(b, targetObj);
     var wasRunning = false;
-    for (var i = 0; i < this.threads.length; i++) {
+    var threadLength = this.threads.length;
+    for (var i = 0; i < threadLength; i++) {
         if (this.threads[i].stack[0] == b) {
             this.threads[i] = newThread;
             wasRunning = true;
@@ -216,7 +222,8 @@ Interpreter.prototype.arg = function(block, index) {
         ++this.opCount;
         if (this.debugOps && this.debugFunc) {
             var finalArgs = [];
-            for (var i = 0; i < arg.args.length; ++i) {
+            var argLength = arg.args.length;
+            for (var i = 0; i < argLength; ++i) {
                 finalArgs.push(this.arg(arg, i));
             }
 
@@ -351,7 +358,8 @@ Interpreter.prototype.broadcast = function(b, waitFlag) {
             }
         }
         runtime.allStacksDo(findReceivers);
-        for (pair in receivers) {
+        var receiversLength = receivers.length;
+        for (var pair = 0; pair < receiversLength; pair++) {
             interp.restartThread(receivers[pair][0], receivers[pair][1]);
         }
         if (!waitFlag) return;
@@ -359,7 +367,8 @@ Interpreter.prototype.broadcast = function(b, waitFlag) {
         interp.activeThread.firstTime = false;
     }
     var done = true;
-    for (pair in interp.activeThread.tmpObj) {
+    var tmpObjLength = interp.activeThread.tmpObj.length;
+    for (var pair = 0; pair < tmpObjLength; pair++) {
         if (interp.isRunning(interp.activeThread.tmpObj[pair][0])) {
             done = false;
         }
@@ -373,7 +382,8 @@ Interpreter.prototype.broadcast = function(b, waitFlag) {
 };
 
 Interpreter.prototype.isRunning = function(b) {
-    for (t in interp.threads) {
+    var threadLength = interp.threads.length;
+    for (var t = 0; t < threadLength; t++) {
         if (interp.threads[t].firstBlock == b) {
             return true;
         }
