@@ -102,27 +102,34 @@ var stageColorHitTest = function(target, color) {
     g = (color >> 8 & 255);
     b = (color & 255);
 
-    var targetCanvas = document.createElement('canvas');
-    targetCanvas.width = 480;
-    targetCanvas.height = 360;
-    var targetTester = targetCanvas.getContext('2d');
-    target.stamp(targetTester, 100);
+    var targetRectangle = target.getRect();
+
+    // Removed target tester and stamped the sprite directly onto the stage canvas, using destination-in so only the sprite appears
 
     var stageCanvas = document.createElement('canvas');
-    stageCanvas.width = 480;
-    stageCanvas.height = 360;
+    stageCanvas.width = targetRectangle.width;
+    stageCanvas.height = targetRectangle.height;
     var stageContext = stageCanvas.getContext('2d');
+    stageContext.translate(-targetRectangle.left, -targetRectangle.top);
 
     $.each(runtime.sprites, function(i, sprite) {
-        if (sprite != target)
-            sprite.stamp(stageContext, 100);
+        if (sprite != target && sprite !== 'undefined' && typeof(sprite) == 'object' && sprite.constructor == Sprite && sprite.getRect().intersects(targetRectangle))
+        {
+            if (sprite.visible == true)
+            {
+                sprite.stamp(stageContext, 100);
+            }
+        }
     });
 
+    // Change the composite operation so the canvas only has data within the target's shape 
+    stageContext.globalCompositeOperation = "destination-in";
+    target.stamp(stageContext, 100);
+
     var hitData = stageContext.getImageData(0, 0, stageCanvas.width, stageCanvas.height).data;
-    var meshData = targetTester.getImageData(0, 0, targetCanvas.width, targetCanvas.height).data;
-    var pxCount = meshData.length;
+    var pxCount = hitData.length;
     for (var i = 0; i < pxCount; i += 4) {
-        if (meshData[i+3] > 0 && hitData[i] == r && hitData[i+1] == g && hitData[i+2] == b)
+        if (hitData[i+3] > 0 && hitData[i] == r && hitData[i+1] == g && hitData[i+2] == b)
             return true;
     }
     return false;
