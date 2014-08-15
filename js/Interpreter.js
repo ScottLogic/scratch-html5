@@ -49,10 +49,11 @@ var Interpreter = function() {
     this.variables = {};
     this.threads = [];
     this.activeThread = new Thread(null);
-    this.WorkTime = 30;
+    this.WorkTime = 0.75 * 30;
     this.currentMSecs = null;
     this.timer = new Timer();
     this.yield = false;
+    this.isWaiting = false;
     this.doRedraw = false;
     this.opCount = 0; // used to benchmark the interpreter
     this.debugOps = false;
@@ -105,13 +106,16 @@ Interpreter.prototype.stepThreads = function() {
     if (this.threads.length == 0) return;
 
     while ((this.currentMSecs - startTime) < this.WorkTime && !this.doRedraw) {
-        var threadStopped = false;
+        var threadStopped = false,
+            runnableCount = 0;
         for (var a = this.threads.length-1; a >= 0; --a) {
             this.activeThread = this.threads[a];
+            this.isWaiting = false;
             this.stepActiveThread();
             if (!this.activeThread || this.activeThread.nextBlock == null) {
                 threadStopped = true;
             }
+            if(!this.isWaiting) { runnableCount++; }
         }
         if (threadStopped) {
             var newThreads = [];
@@ -123,6 +127,7 @@ Interpreter.prototype.stepThreads = function() {
             this.threads = newThreads;
             if (this.threads.length == 0) return;
         }
+        if(runnableCount == 0) { return; }
         this.currentMSecs = this.timer.time();
     }
 };
@@ -261,6 +266,7 @@ Interpreter.prototype.startTimer = function(secs) {
     this.activeThread.tmp = this.currentMSecs + waitMSecs; // end time in milliseconds
     this.activeThread.firstTime = false;
     this.yield = true;
+    this.isWaiting = true;
 };
 
 Interpreter.prototype.checkTimer = function() {
@@ -272,6 +278,7 @@ Interpreter.prototype.checkTimer = function() {
         return true;
     } else {
         this.yield = true;
+        this.isWaiting = true;
         return false;
     }
 };
