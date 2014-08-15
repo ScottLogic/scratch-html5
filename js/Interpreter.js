@@ -133,7 +133,28 @@ Interpreter.prototype.stepActiveThread = function() {
         return;
     }
     var b = this.activeThread.nextBlock;
-    if (b == null) return;
+    if (b == null)
+    {
+        while (!b)
+        {
+            if (this.activeThread.stack.length === 0) {
+                this.activeThread.nextBlock = null;
+                return;
+            } else {
+                b = this.activeThread.stack.pop();
+                if (b != 'undefined' && b != null)
+                {
+                    if (b.isLoop) {
+                        this.activeThread.nextBlock = b; // preserve where it left off
+                        return;
+                    } else {
+                        b = b.nextBlock; // skip and continue for non looping blocks
+                    }
+                }
+            }
+            //return;
+        }
+    }
     this.yield = false;
     while (true) {
         if (this.activeThread.paused) return;
@@ -144,7 +165,8 @@ Interpreter.prototype.stepActiveThread = function() {
         this.activeThread.nextBlock = b.nextBlock;
         if (this.debugOps && this.debugFunc) {
             var finalArgs = [];
-            for (var i = 0; i < b.args.length; ++i) {
+            argLength = b.args.length;
+            for (var i = 0; i < argLength; ++i) {
                 finalArgs.push(this.arg(b, i));
             }
 
@@ -163,12 +185,23 @@ Interpreter.prototype.stepActiveThread = function() {
                 this.activeThread.nextBlock = null;
                 return;
             } else {
-                b = this.activeThread.stack.pop();
-                if (b.isLoop) {
-                    this.activeThread.nextBlock = b; // preserve where it left off
-                    return;
-                } else {
-                    b = b.nextBlock; // skip and continue for non looping blocks
+                var poppedThread = this.activeThread.stack.pop();
+                b = poppedThread;
+                if (b != 'undefined' && b != null)
+                {
+                    if (b.isLoop) {
+                        this.activeThread.nextBlock = b; // preserve where it left off
+                        return;
+                    } else {
+                        if (typeof(poppedThread.firstBlock) !== 'undefined')
+                        {
+                            if (poppedThread.firstBlock.op == 'procDef')
+                            {
+                                this.activeThread.firstBlock = poppedThread.firstBlock;
+                            }
+                        }
+                        b = b.nextBlock; // skip and continue for non looping blocks
+                    }
                 }
             }
         }
