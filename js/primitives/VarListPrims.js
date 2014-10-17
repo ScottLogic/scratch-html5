@@ -75,7 +75,8 @@ VarListPrims.prototype.primChangeVar = function(b) {
 
 VarListPrims.prototype.primHideVar = function(b) {
     var targetVar = interp.arg(b, 0), targetSprite = interp.targetSprite().objName;
-    for (var r = 0; r < runtime.reporters.length; r++) {
+    var runtimeReporterLength = runtime.reporters.length;
+    for (var r = 0; r < runtimeReporterLength; r++) {
         if (runtime.reporters[r].cmd == 'getVar:' && runtime.reporters[r].param == targetVar && (runtime.reporters[r].target == targetSprite || runtime.reporters[r].target == 'Stage')) {
             runtime.reporters[r].visible = false;
             return;
@@ -85,7 +86,8 @@ VarListPrims.prototype.primHideVar = function(b) {
 
 VarListPrims.prototype.primShowVar = function(b) {
     var targetVar = interp.arg(b, 0), targetSprite = interp.targetSprite().objName;
-    for (var r = 0; r < runtime.reporters.length; r++) {
+    var runtimeReporterLength = runtime.reporters.length;
+    for (var r = 0; r < runtimeReporterLength; r++) {
         if (runtime.reporters[r].cmd == 'getVar:' && runtime.reporters[r].param == targetVar && (runtime.reporters[r].target == targetSprite || runtime.reporters[r].target == 'Stage')) {
             runtime.reporters[r].visible = true;
             return;
@@ -195,7 +197,8 @@ VarListPrims.prototype.primListContains = function(b) {
 
 VarListPrims.prototype.primHideList = function(b) {
     var targetList = interp.arg(b, 0), targetSprite = interp.targetSprite().objName;
-    for (var r = 0; r < runtime.reporters.length; r++) {
+    var runtimeReporterLength = runtime.reporters.length;
+    for (var r = 0; r < runtimeReporterLength; r++) {
         if (runtime.reporters[r] instanceof List && runtime.reporters[r].listName == targetList && (runtime.reporters[r].target == targetSprite || runtime.reporters[r].target == 'Stage')) {
             runtime.reporters[r].visible = false;
             return;
@@ -205,7 +208,8 @@ VarListPrims.prototype.primHideList = function(b) {
 
 VarListPrims.prototype.primShowList = function(b) {
     var targetList = interp.arg(b, 0), targetSprite = interp.targetSprite().objName;
-    for (var r = 0; r < runtime.reporters.length; r++) {
+    var runtimeReporterLength = runtime.reporters.length;
+    for (var r = 0; r < runtimeReporterLength; r++) {
         if (runtime.reporters[r] instanceof List && runtime.reporters[r].listName == targetList && (runtime.reporters[r].target == targetSprite || runtime.reporters[r].target == 'Stage')) {
             runtime.reporters[r].visible = true;
             return;

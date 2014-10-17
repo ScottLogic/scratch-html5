@@ -116,7 +116,8 @@ var Sprite = function(data) {
 // Attaches a Sprite (<img>) to a Scratch scene
 Sprite.prototype.attach = function(scene) {
     // Create textures and materials for each of the costumes.
-    for (var c in this.costumes) {
+    var costumeLength = this.costumes.length;
+    for (var c = 0; c < costumeLength; c++) {
         this.textures[c] = document.createElement('img');
         $(this.textures[c])
         .load([this, c], function(evo) {
@@ -383,7 +384,7 @@ Sprite.prototype.showBubble = function(text, type) {
         this.talkBubbleBox.addClass('say-think-border');
         this.talkBubbleStyler.addClass('bubble-say');
     } else if (type == 'think') {
-        this.talkBubbleBox.addClass('say-think-border');
+        this.talkBubbleBox.addClass('say-think-border'
         this.talkBubbleStyler.addClass('bubble-think');
     } else if (type == 'doAsk') {
         this.talkBubbleBox.addClass('ask-border');

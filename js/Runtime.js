@@ -101,7 +101,8 @@ Runtime.prototype.stopAll = function() {
 // Step method for execution - called every 33 milliseconds
 Runtime.prototype.step = function() {
     interp.stepThreads();
-    for (var r = 0; r < runtime.reporters.length; r++) {
+    var runtimeReporterLength = runtime.reporters.length;
+    for (var r = 0; r < runtimeReporterLength; r++) {
         runtime.reporters[r].update();
     }
 };
