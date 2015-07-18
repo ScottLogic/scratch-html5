@@ -226,8 +226,11 @@ Runtime.prototype.reassignZ = function(target, move) {
     // Renumber the z-indices
     var newZ = 1;
     $.each(this.sprites, function(index, sprite) {
-        sprite.z = newZ;
-        sprite.updateLayer();
+        if(sprite.z !== newZ)
+        {
+            sprite.z = newZ;
+            sprite.updateLayer();
+        }
         newZ++;
     });
 };

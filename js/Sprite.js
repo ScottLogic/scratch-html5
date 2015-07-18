@@ -41,6 +41,7 @@ var Sprite = function(data) {
     this.costumes = data.costumes || [];
     this.currentCostumeIndex = data.currentCostumeIndex || 0;
     this.previousCostumeIndex = -1;
+    this.needsRedraw = false;
 
     this.objName = data.objName || '';
 
@@ -289,6 +290,10 @@ Sprite.prototype.updateVisible = function() {
 };
 
 Sprite.prototype.updateTransform = function() {
+    this.needsRedraw = true;
+};
+
+Sprite.prototype.renderTransform = function() {
     var texture = this.textures[this.currentCostumeIndex];
     var resolution = this.costumes[this.currentCostumeIndex].bitmapResolution || 1;
 
@@ -343,6 +348,7 @@ Sprite.prototype.updateTransform = function() {
     }
 
     this.updateLayer();
+    this.needsRedraw = false;
 };
 
 Sprite.prototype.updateFilters = function() {
@@ -436,6 +442,7 @@ Sprite.prototype.bindDoAskButton = function() {
 };
 
 Sprite.prototype.setXY = function(x, y) {
+    if(this.scratchX == x && this.scratchY == y) return;
     this.scratchX = x;
     this.scratchY = y;
     this.updateTransform();
@@ -445,6 +452,7 @@ Sprite.prototype.setDirection = function(d) {
     var rotation;
     d = d % 360
     if (d < 0) d += 360;
+    if(d === this.direction) return;
     this.direction = d > 180 ? d - 360 : d;
     if (this.rotationStyle == 'normal') {
         rotation = (this.direction - 90) % 360;
@@ -473,6 +481,7 @@ Sprite.prototype.getSize = function() {
 Sprite.prototype.setSize = function(percent) {
     var newScale = percent / 100.0;
     newScale = Math.max(0.05, Math.min(newScale, 100));
+    if(this.scale === newScale) return;
     this.scale = newScale;
     this.updateTransform();
 };

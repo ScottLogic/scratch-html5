@@ -112,6 +112,11 @@ Interpreter.prototype.stepThreads = function() {
             if (!this.activeThread || this.activeThread.nextBlock == null) {
                 threadStopped = true;
             }
+            var sprite = this.activeThread.target;
+            if(sprite.needsRedraw)
+            {
+                sprite.renderTransform();
+            }
         }
         if (threadStopped) {
             var newThreads = [];
